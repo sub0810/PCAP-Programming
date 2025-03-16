@@ -71,7 +71,18 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header,
     struct tcpheader * tcp = (struct tcpheader *)
                             ((u_char *)ip + (ip->iph_ihl*4));                 
     printf("tcp    From: %d\n", ntohs(tcp->tcp_sport));   
-    printf("tcp      To: %d\n", ntohs(tcp->tcp_dport));           
+    printf("tcp      To: %d\n", ntohs(tcp->tcp_dport));
+    
+    u_char *message = (u_char *)tcp + (TH_OFF(tcp))*4;
+    int message_len = ntohs(ip->iph_len) - ((ip->iph_ihl * 4) + (TH_OFF(tcp) * 4));
+    if(message_len > 64){
+      //printf("message_len: %d\n", message_len);
+        printf("message:\n");
+        for (int i = 0; i < 64; i++)
+          printf("%c", message[i]);
+    }
+    
+    printf("\n-------------------\n");
   }
 }
 
